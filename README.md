@@ -1,44 +1,44 @@
 # SolanaDevMinecraftForge1.20.1 🚀⛏️
 
-Este repositório contém uma integração entre a blockchain **Solana** e o **Minecraft (Java Edition)** utilizando o **Minecraft Forge 1.20.1**. O objetivo deste mod é permitir que desenvolvedores e jogadores conectem suas carteiras Solana ao jogo, interajam com smart contracts (programs), ou gerenciem itens dentro do jogo baseados em tokens ou NFTs da rede Solana.
+This repository contains an integration between the **Solana** blockchain and **Minecraft (Java Edition)** using **Minecraft Forge 1.20.1**. The goal of this mod is to allow developers and players to connect their Solana wallets to the game, interact with smart contracts (programs), or manage in-game items based on tokens or NFTs from the Solana network.
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-Antes de começar, certifique-se de ter as seguintes ferramentas instaladas no seu computador:
+Before you begin, ensure you have the following tools installed on your computer:
 
-1. **Java Development Kit (JDK) 17**: Necessário para o Minecraft 1.20.1 e Forge.
-   * [Baixar JDK 17 (Oracle)](https://www.oracle.com/java/technologies/downloads/#java17) ou usar o OpenJDK (Adoptium Temurin).
-2. **Minecraft Launcher**: O launcher oficial ou um alternativo de sua preferência (Prism Launcher, CurseForge App, etc.).
-3. **Conta Minecraft**: Uma conta original (Java Edition) para carregar o jogo.
-4. **Ambiente Solana (Para Desenvolvedores)**:
-   * Solana CLI instalada ([Instruções oficiais](https://docs.solanalabs.com/cli/install)).
-   * Uma carteira de testes (File-system wallet ou Phantom configurada na Devnet/Testnet).
-5. **Git**: Para clonar o repositório.
-   * [Baixar Git](https://git-scm.com/)
+1. **Java Development Kit (JDK) 17**: Required for Minecraft 1.20.1 and Forge.
+   * [Download JDK 17 (Oracle)](https://www.oracle.com/java/technologies/downloads/#java17) or use OpenJDK (Adoptium Temurin).
+2. **Minecraft Launcher**: The official launcher or an alternative of your choice (Prism Launcher, CurseForge App, etc.).
+3. **Minecraft Account**: A legitimate Java Edition account to load the game.
+4. **Solana Environment (For Developers)**:
+   * Solana CLI installed ([Official Instructions](https://docs.solanalabs.com/cli/install)).
+   * A test wallet (File-system wallet or Phantom configured for Devnet/Testnet).
+5. **Git**: To clone the repository.
+   * [Download Git](https://git-scm.com/)
 
 ---
 
-## 🛠️ Como Instalar e Configurar (Desenvolvimento)
+## 🛠️ Installation and Configuration (Development)
 
-Se você é um desenvolvedor e deseja compilar, modificar ou testar o mod localmente, siga os passos abaixo:
+If you are a developer and wish to compile, modify, or test the mod locally, follow the steps below:
 
-### 1. Clonar o Repositório
-Abra o seu terminal (Prompt de Comando, PowerShell ou Git Bash) e execute:
+### 1. Clone the Repository
+Open your terminal (Command Prompt, PowerShell, or Git Bash) and run:
 ```bash
 git clone https://github.com/Annabel369/SolanaDevMinecraftForge1.20.1.git
 cd SolanaDevMinecraftForge1.20.1
 ```
 
-### 2. Configurar o Ambiente de Desenvolvimento
-O projeto utiliza o Gradle para gerenciar as dependências do Forge. No terminal, execute o comando correspondente ao seu sistema operacional para baixar o Forge MDK e gerar os arquivos necessários:
+### 2. Configure the Development Environment
+The project uses Gradle to manage Forge dependencies. In the terminal, run the command corresponding to your operating system to download the Forge MDK and generate the necessary files:
 
-**Windows (PowerShell ou CMD):**
+**Windows (PowerShell or CMD):**
 ```bash
-./gradlew genEclipseRuns  # Se for usar o Eclipse
-# OU
-./gradlew genIntellijRuns # Se for usar o IntelliJ IDEA (Recomendado)
+./gradlew genEclipseRuns  # If using Eclipse
+# OR
+./gradlew genIntellijRuns # If using IntelliJ IDEA (Recommended)
 ```
 
 **Linux / macOS:**
@@ -47,16 +47,16 @@ chmod +x gradlew
 ./gradlew genIntellijRuns
 ```
 
-### 3. Abrindo o Projeto na IDE
-1. Abra o IntelliJ IDEA (ou Eclipse).
-2. Escolha a opção **Open** (Abrir) e selecione a pasta raiz do projeto clonado.
-3. Aguarde o Gradle importar todas as dependências do Minecraft e do Forge (isso pode demorar alguns minutos na primeira vez).
-4. No IntelliJ, recarregue o projeto Gradle se os botões de execução não aparecerem automaticamente.
+### 3. Opening the Project in your IDE
+1. Open IntelliJ IDEA (or Eclipse).
+2. Select the **Open** option and choose the root folder of the cloned project.
+3. Wait for Gradle to import all Minecraft and Forge dependencies (this may take a few minutes the first time).
+4. In IntelliJ, reload the Gradle project if the run buttons do not appear automatically.
 
-### 4. Executando o Jogo em Modo de Teste
-Para rodar o Minecraft com o mod carregado diretamente da IDE:
+### 4. Running the Game in Test Mode
+To run Minecraft with the mod loaded directly from the IDE:
 
-* **Via IDE:** Procure pela configuração de execução chamada `runClient` e clique em **Run** (Executar).
+* **Via IDE:** Look for the run configuration named `runClient` and click **Run**.
 * **Via Terminal:**
 ```bash
 # Windows
@@ -68,53 +68,53 @@ Para rodar o Minecraft com o mod carregado diretamente da IDE:
 
 ---
 
-## 📦 Como Compilar o Mod (.jar)
-Se você terminou suas modificações e quer gerar o arquivo do mod para instalar na sua pasta `.minecraft` normal ou enviar para um servidor:
+## 📦 How to Build the Mod (.jar)
+If you have finished your modifications and want to generate the mod file to install in your regular `.minecraft` folder or upload to a server:
 
-No terminal, execute o comando:
+In the terminal, run:
 ```bash
 ./gradlew build
 ```
 
-Após o término do processo (**BUILD SUCCESSFUL**), o arquivo `.jar` compilado estará localizado na pasta:
-`build/libs/SolanaDevMinecraftForge1.20.1-[versão].jar`
+After the process finishes (**BUILD SUCCESSFUL**), the compiled `.jar` file will be located in:
+`build/libs/SolanaDevMinecraftForge1.20.1-[version].jar`
 
 ---
 
-## 🎮 Como Instalar o Mod no Minecraft (Jogador)
-Se você quer apenas jogar/testar o mod compilado no seu Minecraft padrão:
+## 🎮 How to Install the Mod (Players)
+If you just want to play/test the compiled mod in your standard Minecraft:
 
-1. Certifique-se de ter o **Minecraft Forge 1.20.1** instalado no seu Minecraft Launcher.
-   * Se não tiver, baixe o instalador em [files.minecraftforge.net](https://files.minecraftforge.net/) (versão Recommended ou Latest) e execute-o.
-2. Baixe ou pegue o arquivo `.jar` gerado na pasta `build/libs/` (ou na aba Releases do GitHub, se houver).
-3. Abra o menu "Executar" do Windows (`Win + R`), digite `%appdata%` e clique em OK.
-4. Navegue até a pasta `.minecraft` e depois abra a pasta **mods** (se ela não existir, crie uma pasta chamada `mods` em letras minúsculas).
-5. Cole o arquivo `.jar` dentro da pasta **mods**.
-6. Abra o Minecraft Launcher, selecione o perfil do Forge 1.20.1 e clique em Jogar.
-
----
-
-## 🌐 Configuração da Conexão com a Solana
-*(Ajuste esta seção de acordo com a lógica específica do seu mod, como arquivos de configuração de RPC ou chaves)*
-
-Por padrão, o mod está configurado para se conectar à **Devnet** da Solana.
-
-Certifique-se de alterar a URL de RPC no arquivo de configuração do mod (geralmente gerado em `.minecraft/config/solanadevmod-client.toml` após a primeira execução) se quiser utilizar a Mainnet ou uma Testnet local.
-
-Exemplo de RPC padrão: `https://api.devnet.solana.com`
+1. Make sure you have **Minecraft Forge 1.20.1** installed in your Minecraft Launcher.
+   * If not, download the installer from [files.minecraftforge.net](https://files.minecraftforge.net/) (Recommended or Latest version) and run it.
+2. Download or take the `.jar` file generated in the `build/libs/` folder (or from the GitHub Releases tab, if available).
+3. Open the Windows "Run" menu (`Win + R`), type `%appdata%` and click OK.
+4. Navigate to the `.minecraft` folder and then open the **mods** folder (if it doesn't exist, create a folder named `mods` in lowercase).
+5. Paste the `.jar` file inside the **mods** folder.
+6. Open the Minecraft Launcher, select the Forge 1.20.1 profile, and click Play.
 
 ---
 
-## 🤝 Contribuições
-Contribuições são super bem-vindas! Se você encontrar algum bug ou tiver ideias de novas funções de integração (como suporte a SPL-Tokens, NFTs ou autenticação de carteira via QR Code):
+## 🌐 Solana Connection Configuration
+*(Adjust this section based on your mod's specific logic, such as RPC config files or keys)*
 
-1. Faça um **Fork** do projeto.
-2. Crie uma **Branch** para sua modificação (`git checkout -b feature/NovaFuncionalidade`).
-3. Faça o **Commit** das suas alterações (`git commit -m 'Adicionando funcionalidade X'`).
-4. Envie para o repositório remoto (`git push origin feature/NovaFuncionalidade`).
-5. Abra um **Pull Request**.
+By default, the mod is configured to connect to the Solana **Devnet**.
+
+Make sure to change the RPC URL in the mod's configuration file (usually generated at `.minecraft/config/solanadevmod-client.toml` after the first run) if you want to use Mainnet or a local Testnet.
+
+Default test RPC: `https://api.devnet.solana.com`
 
 ---
 
-## 📄 Licença
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+## 🤝 Contributing
+Contributions are very welcome! If you find a bug or have ideas for new integration features (such as SPL-Token support, NFTs, or wallet authentication via QR Code):
+
+1. **Fork** the project.
+2. Create a **Branch** for your modification (`git checkout -b feature/NewFeature`).
+3. **Commit** your changes (`git commit -m 'Added feature X'`).
+4. Push to the remote repository (`git push origin feature/NewFeature`).
+5. Open a **Pull Request**.
+
+---
+
+## 📄 License
+This project is under the MIT license. See the [LICENSE](LICENSE) file for details.
