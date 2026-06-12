@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://solanadev.com"
+
+[[mods]]
+modId="solanaforge"
+version="1.0.0"
+displayName="Solana Forge"
+logoFile="solanaforge.png"
+authors="Amauri Bueno dos Santos"
+description='''
+Mod que integra a blockchain Solana ao Minecraft Forge 1.20.1.
+Crie carteiras, compre e transfira SOL, proteja baús, use itens exclusivos e muito mais!
+'''
+
+[[dependencies.solanaforge]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.solanaforge]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
