@@ -29,125 +29,214 @@ public class SolanaCommands {
 
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         // Economy & Solana
-        dispatcher.register(Commands.literal("saldo")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    int balance = storeManager.getBalance(player.getName().getString());
-                    player.sendSystemMessage(Component.literal("§6Seu saldo é: §e$" + balance));
-                    return 1;
-                }));
+        registerBalance(dispatcher);
+        registerSolBalance(dispatcher);
+        registerBankBalance(dispatcher);
+        registerBankTransfer(dispatcher);
+        registerCreateWallet(dispatcher);
+        registerAirdrop(dispatcher);
+        registerTransferSol(dispatcher);
+        registerBuyCoins(dispatcher);
+        registerRefund(dispatcher);
+        registerInvest(dispatcher);
+        registerLoan(dispatcher);
 
-        dispatcher.register(Commands.literal("solsaldo")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    solanaManager.handleSolBalance(player);
-                    return 1;
-                }));
+        // Store
+        registerBuyApple(dispatcher);
+        registerBuyEmerald(dispatcher);
+        registerBuyNetherRelic(dispatcher);
+        registerBuyBoots(dispatcher);
+        registerBuyWings(dispatcher);
+        registerBuyPants(dispatcher);
 
-        dispatcher.register(Commands.literal("saldobank")
-                .requires(source -> source.hasPermission(2))
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    solanaManager.handleBankBalance(player);
-                    return 1;
-                }));
+        // Utility
+        registerSetHome(dispatcher);
+        registerHome(dispatcher);
+        registerResetHomes(dispatcher);
+        registerBack(dispatcher);
+        registerTpa(dispatcher);
+        registerTpAccept(dispatcher);
+        registerTpDeny(dispatcher);
 
-        dispatcher.register(Commands.literal("transferebank")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.argument("jogador", StringArgumentType.string())
-                        .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
-                                .executes(context -> {
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                    String target = StringArgumentType.getString(context, "jogador");
-                                    double amount = DoubleArgumentType.getDouble(context, "quantidade");
-                                    solanaManager.transferFromBank(player, target, amount);
-                                    return 1;
-                                }))));
+        // Chest Lock
+        registerLockChest(dispatcher);
+        registerUnlockChest(dispatcher);
+        registerResetChests(dispatcher);
+        registerTrailClear(dispatcher);
+    }
 
-        dispatcher.register(Commands.literal("criarcarteira")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    solanaManager.createWallet(player);
-                    return 1;
-                }));
+    private void registerBalance(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"saldo", "balance"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        int balance = storeManager.getBalance(player.getName().getString());
+                        player.sendSystemMessage(Component.translatable("solanaforge.message.balance", balance));
+                        return 1;
+                    }));
+        }
+    }
 
+    private void registerSolBalance(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"solsaldo", "solbalance"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        solanaManager.handleSolBalance(player);
+                        return 1;
+                    }));
+        }
+    }
+
+    private void registerBankBalance(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"saldobank", "bankbalance"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .requires(source -> source.hasPermission(2))
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        solanaManager.handleBankBalance(player);
+                        return 1;
+                    }));
+        }
+    }
+
+    private void registerBankTransfer(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"transferebank", "banktransfer"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .requires(source -> source.hasPermission(2))
+                    .then(Commands.argument("jogador", StringArgumentType.string())
+                            .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
+                                    .executes(context -> {
+                                        ServerPlayer player = context.getSource().getPlayerOrException();
+                                        String target = StringArgumentType.getString(context, "jogador");
+                                        double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                        solanaManager.transferFromBank(player, target, amount);
+                                        return 1;
+                                    }))));
+        }
+    }
+
+    private void registerCreateWallet(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"criarcarteira", "createwallet"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        solanaManager.createWallet(player);
+                        return 1;
+                    }));
+        }
+    }
+
+    private void registerAirdrop(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("airdrop")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     solanaManager.solicitarAirdrop(player);
                     return 1;
                 }));
+    }
 
-        dispatcher.register(Commands.literal("transferirsol")
-                .then(Commands.argument("jogador", StringArgumentType.string())
-                        .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
-                                .executes(context -> {
-                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                    String target = StringArgumentType.getString(context, "jogador");
-                                    double amount = DoubleArgumentType.getDouble(context, "quantidade");
-                                    solanaManager.transferSolana(player, target, amount);
-                                    return 1;
-                                }))));
+    private void registerTransferSol(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"transferirsol", "transfersol"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("jogador", StringArgumentType.string())
+                            .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
+                                    .executes(context -> {
+                                        ServerPlayer player = context.getSource().getPlayerOrException();
+                                        String target = StringArgumentType.getString(context, "jogador");
+                                        double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                        solanaManager.transferSolana(player, target, amount);
+                                        return 1;
+                                    }))));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprarmoedas")
-                .then(Commands.argument("quantidade_sol", DoubleArgumentType.doubleArg(0.001))
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            double amount = DoubleArgumentType.getDouble(context, "quantidade_sol");
-                            solanaManager.buyGameCurrency(player, amount);
-                            return 1;
-                        })));
+    private void registerBuyCoins(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprarmoedas", "buycoins"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("quantidade_sol", DoubleArgumentType.doubleArg(0.001))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                double amount = DoubleArgumentType.getDouble(context, "quantidade_sol");
+                                solanaManager.buyGameCurrency(player, amount);
+                                return 1;
+                            })));
+        }
+    }
 
-        dispatcher.register(Commands.literal("reembolsar")
-                .then(Commands.argument("assinatura", StringArgumentType.string())
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            String sig = StringArgumentType.getString(context, "assinatura");
-                            solanaManager.refundSolana(player, sig);
-                            return 1;
-                        })));
+    private void registerRefund(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"reembolsar", "refund"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("assinatura", StringArgumentType.string())
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                String sig = StringArgumentType.getString(context, "assinatura");
+                                solanaManager.refundSolana(player, sig);
+                                return 1;
+                            })));
+        }
+    }
 
-        dispatcher.register(Commands.literal("investir")
-                .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(1))
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            double amount = DoubleArgumentType.getDouble(context, "quantidade");
-                            storeManager.invest(player, amount);
-                            return 1;
-                        })));
+    private void registerInvest(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"investir", "invest"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(1))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                storeManager.invest(player, amount);
+                                return 1;
+                            })));
+        }
+    }
 
-        dispatcher.register(Commands.literal("emprestimo")
-                .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(1))
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            double amount = DoubleArgumentType.getDouble(context, "quantidade");
-                            storeManager.takeLoan(player, amount);
-                            return 1;
-                        })));
+    private void registerLoan(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"emprestimo", "loan"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(1))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                storeManager.takeLoan(player, amount);
+                                return 1;
+                            })));
+        }
+    }
 
-        // Store
-        dispatcher.register(Commands.literal("comprar_maca")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyEnchantedApple(player);
-                    return 1;
-                }));
+    private void registerBuyApple(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_maca", "buy_apple"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyEnchantedApple(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprar_esmeralda")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyEmerald(player);
-                    return 1;
-                }));
+    private void registerBuyEmerald(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_esmeralda", "buy_emerald"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyEmerald(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprar_reliquia_nether")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyNetherRelic(player);
-                    return 1;
-                }));
+    private void registerBuyNetherRelic(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_reliquia_nether", "buy_nether_relic"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyNetherRelic(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        // Utility
+    private void registerSetHome(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("sethome")
                 .then(Commands.argument("nome", StringArgumentType.string())
                         .executes(context -> {
@@ -161,7 +250,9 @@ public class SolanaCommands {
                     homeManager.setHome(player, "default");
                     return 1;
                 }));
+    }
 
+    private void registerHome(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("home")
                 .then(Commands.argument("nome", StringArgumentType.string())
                         .executes(context -> {
@@ -177,22 +268,30 @@ public class SolanaCommands {
                     homeManager.teleportToHome(player, "default");
                     return 1;
                 }));
+    }
 
-        dispatcher.register(Commands.literal("resetarcasas")
-                .requires(source -> source.hasPermission(2))
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    homeManager.resetAllHomes(player);
-                    return 1;
-                }));
+    private void registerResetHomes(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"resetarcasas", "resethomes"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .requires(source -> source.hasPermission(2))
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        homeManager.resetAllHomes(player);
+                        return 1;
+                    }));
+        }
+    }
 
+    private void registerBack(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("back")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     teleportManager.teleportBack(player);
                     return 1;
                 }));
+    }
 
+    private void registerTpa(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("tpa")
                 .then(Commands.argument("jogador", EntityArgument.player())
                         .executes(context -> {
@@ -201,93 +300,121 @@ public class SolanaCommands {
                             teleportManager.sendTpaRequest(sender, target);
                             return 1;
                         })));
+    }
 
-        dispatcher.register(Commands.literal("tpaceitar")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    teleportManager.acceptTpa(player);
-                    return 1;
-                }));
+    private void registerTpAccept(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"tpaceitar", "tpaccept"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        teleportManager.acceptTpa(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("tprecusar")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    teleportManager.denyTpa(player);
-                    return 1;
-                }));
+    private void registerTpDeny(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"tprecusar", "tpdeny"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        teleportManager.denyTpa(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        // Chest Lock
-        dispatcher.register(Commands.literal("trancarbau")
-                .then(Commands.argument("senha", StringArgumentType.string())
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            String senha = StringArgumentType.getString(context, "senha");
-                            HitResult hit = player.pick(5.0D, 0.0F, false);
-                            if (hit.getType() == HitResult.Type.BLOCK) {
-                                BlockPos pos = ((BlockHitResult) hit).getBlockPos();
-                                chestLockManager.lockChest(player, pos, senha);
-                            } else {
-                                player.sendSystemMessage(Component.literal("§cVocê precisa olhar para um baú!"));
-                            }
-                            return 1;
-                        })));
+    private void registerLockChest(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"trancarbau", "lockchest"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("senha", StringArgumentType.string())
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                String senha = StringArgumentType.getString(context, "senha");
+                                HitResult hit = player.pick(5.0D, 0.0F, false);
+                                if (hit.getType() == HitResult.Type.BLOCK) {
+                                    BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+                                    chestLockManager.lockChest(player, pos, senha);
+                                } else {
+                                    player.sendSystemMessage(Component.translatable("solanaforge.message.look_at_chest"));
+                                }
+                                return 1;
+                            })));
+        }
+    }
 
-        dispatcher.register(Commands.literal("destrancarbau")
-                .then(Commands.argument("senha", StringArgumentType.string())
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            String senha = StringArgumentType.getString(context, "senha");
-                            HitResult hit = player.pick(5.0D, 0.0F, false);
-                            if (hit.getType() == HitResult.Type.BLOCK) {
-                                BlockPos pos = ((BlockHitResult) hit).getBlockPos();
-                                chestLockManager.unlockChest(player, pos, senha);
-                            } else {
-                                player.sendSystemMessage(Component.literal("§cVocê precisa olhar para um baú!"));
-                            }
-                            return 1;
-                        })));
+    private void registerUnlockChest(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"destrancarbau", "unlockchest"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("senha", StringArgumentType.string())
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                String senha = StringArgumentType.getString(context, "senha");
+                                HitResult hit = player.pick(5.0D, 0.0F, false);
+                                if (hit.getType() == HitResult.Type.BLOCK) {
+                                    BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+                                    chestLockManager.unlockChest(player, pos, senha);
+                                } else {
+                                    player.sendSystemMessage(Component.translatable("solanaforge.message.look_at_chest"));
+                                }
+                                return 1;
+                            })));
+        }
+    }
 
-        dispatcher.register(Commands.literal("resetarbaus")
-                .requires(source -> source.hasPermission(2))
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    chestLockManager.resetAllChests(player);
-                    return 1;
-                }));
+    private void registerResetChests(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"resetarbaus", "resetchests"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .requires(source -> source.hasPermission(2))
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        chestLockManager.resetAllChests(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprar_botas")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyBootRelic(player);
-                    return 1;
-                }));
+    private void registerBuyBoots(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_botas", "buy_boots"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyBootRelic(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprar_asas")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyWingRelic(player);
-                    return 1;
-                }));
+    private void registerBuyWings(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_asas", "buy_wings"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyWingRelic(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("comprar_calca")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    storeManager.buyLegRelic(player);
-                    return 1;
-                }));
+    private void registerBuyPants(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"comprar_calca", "buy_pants"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        storeManager.buyLegRelic(player);
+                        return 1;
+                    }));
+        }
+    }
 
-        dispatcher.register(Commands.literal("apagarpegadas")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    solanaManager.limparTrilhaDeLuz(player);
-                    return 1;
-                }));
-
-        dispatcher.register(Commands.literal("limpartrilhadeluz")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    solanaManager.limparTrilhaDeLuz(player);
-                    return 1;
-                }));
+    private void registerTrailClear(CommandDispatcher<CommandSourceStack> dispatcher) {
+        for (String literal : new String[]{"apagarpegadas", "limpartrilhadeluz", "trailclear", "lighttrailclear"}) {
+            dispatcher.register(Commands.literal(literal)
+                    .executes(context -> {
+                        ServerPlayer player = context.getSource().getPlayerOrException();
+                        solanaManager.limparTrilhaDeLuz(player);
+                        return 1;
+                    }));
+        }
     }
 }

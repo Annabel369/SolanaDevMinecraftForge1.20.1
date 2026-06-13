@@ -42,15 +42,15 @@ public class ChestLockManager {
                 stmt.setString(5, password);
 
                 stmt.executeUpdate();
-                player.sendSystemMessage(Component.literal("§a🔒 Baú trancado com sucesso!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.locked"));
 
                 net.minecraft.world.item.ItemStack tag = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NAME_TAG);
                 tag.setHoverName(Component.literal(password));
                 player.getInventory().add(tag);
-                player.sendSystemMessage(Component.literal("§e🎫 Você recebeu uma Etiqueta com a senha! Segure ela e clique no baú para abrir direto."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.password_tag"));
 
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao trancar baú: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.lock_error", e.getMessage()));
             }
         });
     }
@@ -76,16 +76,16 @@ public class ChestLockManager {
                             delStmt.setDouble(3, pos.getY());
                             delStmt.setDouble(4, pos.getZ());
                             delStmt.executeUpdate();
-                            player.sendSystemMessage(Component.literal("§a🔓 Baú destrancado com sucesso!"));
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.chest.unlocked"));
                         }
                     } else {
-                        player.sendSystemMessage(Component.literal("§c❌ Senha incorreta!"));
+                        player.sendSystemMessage(Component.translatable("solanaforge.message.chest.wrong_password"));
                     }
                 } else {
-                    player.sendSystemMessage(Component.literal("§cEste baú não está trancado."));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.chest.not_locked"));
                 }
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao destrancar baú."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.unlock_error"));
             }
         });
     }
@@ -95,9 +95,9 @@ public class ChestLockManager {
             try (Connection conn = databaseManager.getConnection();
                  java.sql.Statement stmt = conn.createStatement()) {
                 stmt.execute("TRUNCATE TABLE locked_chests");
-                player.sendSystemMessage(Component.literal("§c⚠️ TODOS os baús foram destrancados!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.reset_all"));
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao resetar baús."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.chest.reset_error"));
             }
         });
     }
@@ -133,12 +133,12 @@ public class ChestLockManager {
             if (password != null) {
                 net.minecraft.world.item.ItemStack heldItem = event.getItemStack();
                 if (heldItem.is(net.minecraft.world.item.Items.NAME_TAG) && heldItem.getHoverName().getString().equals(password)) {
-                    event.getEntity().sendSystemMessage(Component.literal("§a🔓 Acesso concedido pela Etiqueta!"));
+                    event.getEntity().sendSystemMessage(Component.translatable("solanaforge.message.chest.access_granted"));
                     return; // Permite abrir
                 }
 
                 event.setCanceled(true);
-                event.getEntity().sendSystemMessage(Component.literal("§c🔒 Baú trancado! Clique segurando a Etiqueta com a senha."));
+                event.getEntity().sendSystemMessage(Component.translatable("solanaforge.message.chest.locked_interact"));
                 
                 net.minecraft.world.entity.LightningBolt lightning = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create(level);
                 if (lightning != null) {
@@ -166,7 +166,7 @@ public class ChestLockManager {
             if (password != null) {
                 event.setCanceled(true);
                 if (event.getPlayer() != null) {
-                    event.getPlayer().sendSystemMessage(Component.literal("§c🔒 Você não pode quebrar um baú trancado! Destranque primeiro."));
+                    event.getPlayer().sendSystemMessage(Component.translatable("solanaforge.message.chest.cannot_break"));
                 }
             }
         }

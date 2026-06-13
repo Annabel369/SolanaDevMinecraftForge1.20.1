@@ -20,6 +20,15 @@ Before you begin, ensure you have the following tools installed on your computer
 
 ---
 
+## 🌍 Multi-language Support
+The mod now automatically detects your Minecraft language settings and supports:
+*   **English (US)**
+*   **Portuguese (Brazil)**
+
+All in-game messages, item names, and command feedbacks are fully localized.
+
+---
+
 ## 🛠️ Installation and Configuration (Development)
 
 If you are a developer and wish to compile, modify, or test the mod locally, follow the steps below:

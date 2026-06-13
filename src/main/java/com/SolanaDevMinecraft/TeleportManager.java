@@ -32,16 +32,16 @@ public class TeleportManager {
         LastLocation loc = lastLocations.get(player.getUUID());
         if (loc != null) {
             player.teleportTo(loc.level, loc.pos.x, loc.pos.y, loc.pos.z, loc.yRot, loc.xRot);
-            player.sendSystemMessage(Component.literal("§6Você voltou para sua última posição!"));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.teleport_back"));
         } else {
-            player.sendSystemMessage(Component.literal("§cNenhuma posição anterior encontrada."));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.no_previous_pos"));
         }
     }
 
     public void sendTpaRequest(ServerPlayer sender, ServerPlayer target) {
         tpaRequests.put(target.getUUID(), sender.getUUID());
-        sender.sendSystemMessage(Component.literal("§6Pedido de teleporte enviado para §e" + target.getName().getString() + "§6."));
-        target.sendSystemMessage(Component.literal("§e" + sender.getName().getString() + " §6deseja se teleportar até você! Use §a/tpaceitar §6para aceitar ou §c/tprecusar §6para negar."));
+        sender.sendSystemMessage(Component.translatable("solanaforge.message.tp_sent", target.getName().getString()));
+        target.sendSystemMessage(Component.translatable("solanaforge.message.tp_received", sender.getName().getString()));
     }
 
     public void acceptTpa(ServerPlayer target) {
@@ -51,11 +51,11 @@ public class TeleportManager {
             if (requester != null) {
                 saveLastLocation(requester);
                 requester.teleportTo(target.serverLevel(), target.getX(), target.getY(), target.getZ(), target.getYRot(), target.getXRot());
-                requester.sendSystemMessage(Component.literal("§aTeleporte aceito! Você foi movido até §e" + target.getName().getString() + "§a."));
-                target.sendSystemMessage(Component.literal("§aTeleporte realizado com sucesso."));
+                requester.sendSystemMessage(Component.translatable("solanaforge.message.tp_accepted_requester", target.getName().getString()));
+                target.sendSystemMessage(Component.translatable("solanaforge.message.tp_success"));
             }
         } else {
-            target.sendSystemMessage(Component.literal("§cNenhum pedido de teleporte pendente."));
+            target.sendSystemMessage(Component.translatable("solanaforge.message.no_pending_tp"));
         }
     }
 
@@ -64,11 +64,11 @@ public class TeleportManager {
         if (requesterUUID != null) {
             ServerPlayer requester = target.getServer().getPlayerList().getPlayer(requesterUUID);
             if (requester != null) {
-                requester.sendSystemMessage(Component.literal("§cPedido de teleporte recusado por §e" + target.getName().getString() + "§c."));
+                requester.sendSystemMessage(Component.translatable("solanaforge.message.tp_denied_requester", target.getName().getString()));
             }
-            target.sendSystemMessage(Component.literal("§cVocê recusou o pedido de teleporte."));
+            target.sendSystemMessage(Component.translatable("solanaforge.message.tp_denied_target"));
         } else {
-            target.sendSystemMessage(Component.literal("§cNenhum pedido de teleporte pendente."));
+            target.sendSystemMessage(Component.translatable("solanaforge.message.no_pending_tp"));
         }
     }
 

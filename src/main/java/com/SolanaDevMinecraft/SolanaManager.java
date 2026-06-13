@@ -99,34 +99,34 @@ public class SolanaManager {
         String playerName = player.getName().getString();
         String walletAddress = getWalletFromDatabase(playerName);
         if (walletAddress == null) {
-            player.sendSystemMessage(Component.literal("§cVocê ainda não possui uma carteira registrada para o nome: " + getEffectiveName(playerName)));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.no_wallet", getEffectiveName(playerName)));
             return;
         }
 
-        player.sendSystemMessage(Component.literal("§6Carteira SOL (§e" + getEffectiveName(playerName) + "§6): §b" + walletAddress)
+        player.sendSystemMessage(Component.translatable("solanaforge.message.wallet_address", getEffectiveName(playerName), walletAddress)
                 .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, walletAddress))));
 
         CompletableFuture.runAsync(() -> {
             try {
                 double balance = getSolanaBalance(walletAddress);
-                player.sendSystemMessage(Component.literal("§5Saldo de SOL: §6" + balance + " SOL"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.sol_balance", balance));
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro na API: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.api_error", e.getMessage()));
             }
         });
     }
 
     public void handleBankBalance(ServerPlayer player) {
         String bankWallet = ConfigManager.WALLET_BANK.get();
-        player.sendSystemMessage(Component.literal("§6Carteira SOL (§eBANCO§6): §b" + bankWallet)
+        player.sendSystemMessage(Component.translatable("solanaforge.message.bank_wallet", bankWallet)
                 .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, bankWallet))));
 
         CompletableFuture.runAsync(() -> {
             try {
                 double balance = getSolanaBalance(bankWallet);
-                player.sendSystemMessage(Component.literal("§5Saldo de SOL: §6" + balance + " SOL"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.sol_balance", balance));
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro na API: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.api_error", e.getMessage()));
             }
         });
     }
@@ -135,7 +135,7 @@ public class SolanaManager {
         String recipientWallet = getWalletFromDatabase(recipientName);
 
         if (recipientWallet == null) {
-            admin.sendSystemMessage(Component.literal("§cO destinatário §e" + recipientName + " §cnão possui uma carteira registrada."));
+            admin.sendSystemMessage(Component.translatable("solanaforge.message.recipient_no_wallet", recipientName));
             return;
         }
 
@@ -157,14 +157,14 @@ public class SolanaManager {
                 if (json.getString("status").equalsIgnoreCase("success")) {
                     String output = json.getString("output");
                     String signature = extractValue(output, "Signature: ([A-Za-z0-9]+)");
-                    admin.sendSystemMessage(Component.literal("§a💸 Transferência do Banco para §e" + recipientName + " §ade §e" + amount + " SOL §aconcluída!"));
+                    admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_success", recipientName, amount));
                     registerTransaction("BANCO", "transferencia_para_" + recipientName, amount, "SOL", signature);
                 } else {
                     String out = json.optString("output", "");
-                    admin.sendSystemMessage(Component.literal("§cErro na transferência: " + (out.isEmpty() ? json.optString("message") : out)));
+                    admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
                 }
             } catch (Exception e) {
-                admin.sendSystemMessage(Component.literal("§cErro ao processar transferência do banco: " + e.getMessage()));
+                admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_process_error", e.getMessage()));
             }
         });
     }
@@ -173,7 +173,7 @@ public class SolanaManager {
         String playerName = player.getName().getString();
         String walletAddress = getWalletFromDatabase(playerName);
         if (walletAddress == null) {
-            player.sendSystemMessage(Component.literal("§cVocê não possui uma carteira registrada."));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.sender_no_wallet"));
             return;
         }
 
@@ -187,13 +187,13 @@ public class SolanaManager {
                 
                 JSONObject json = new JSONObject(response);
                 if (json.getString("status").equalsIgnoreCase("success")) {
-                    player.sendSystemMessage(Component.literal("§a💸 Airdrop de 2 SOL recebido com sucesso!"));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.airdrop_success"));
                 } else {
                     String out = json.optString("output", "");
-                    player.sendSystemMessage(Component.literal("§cErro no airdrop: " + (out.isEmpty() ? json.optString("message") : out)));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
                 }
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro ao processar airdrop: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.airdrop_process_error", e.getMessage()));
             }
         });
     }
@@ -204,11 +204,11 @@ public class SolanaManager {
         String recipientWallet = getWalletFromDatabase(recipientName);
 
         if (senderWallet == null) {
-            sender.sendSystemMessage(Component.literal("§cVocê não possui uma carteira registrada."));
+            sender.sendSystemMessage(Component.translatable("solanaforge.message.sender_no_wallet"));
             return;
         }
         if (recipientWallet == null) {
-            sender.sendSystemMessage(Component.literal("§cO destinatário §e" + recipientName + " §cnão possui uma carteira registrada."));
+            sender.sendSystemMessage(Component.translatable("solanaforge.message.recipient_no_wallet", recipientName));
             return;
         }
 
@@ -231,14 +231,14 @@ public class SolanaManager {
                 if (json.getString("status").equalsIgnoreCase("success")) {
                     String output = json.getString("output");
                     String signature = extractValue(output, "Signature: ([A-Za-z0-9]+)");
-                    sender.sendSystemMessage(Component.literal("§a💸 Transferência de §e" + amount + " SOL §aconcluída!"));
+                    sender.sendSystemMessage(Component.translatable("solanaforge.message.player_transfer_success", amount));
                     registerTransaction(senderEffectiveName, "transferencia", amount, "SOL", signature);
                 } else {
                     String out = json.optString("output", "");
-                    sender.sendSystemMessage(Component.literal("§cErro na transferência: " + (out.isEmpty() ? json.optString("message") : out)));
+                    sender.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
                 }
             } catch (Exception e) {
-                sender.sendSystemMessage(Component.literal("§cErro ao processar transferência: " + e.getMessage()));
+                sender.sendSystemMessage(Component.translatable("solanaforge.message.transfer_process_error", e.getMessage()));
             }
         });
     }
@@ -249,7 +249,7 @@ public class SolanaManager {
         String walletAddress = getWalletFromDatabase(minecraftName);
         
         if (walletAddress == null) {
-            player.sendSystemMessage(Component.literal("§cVocê não possui uma carteira registrada para o nome: " + effectiveName));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.no_wallet", effectiveName));
             return;
         }
 
@@ -284,13 +284,13 @@ public class SolanaManager {
                     }
                     
                     registerTransaction(effectiveName.toLowerCase(), "compra_moedas", solAmount, "SOL", signature);
-                    player.sendSystemMessage(Component.literal("§a✅ Compra realizada! Sua conta §e" + effectiveName + " §arecebeu §e" + gameCurrencyAmount + " §amoedas."));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_success", effectiveName, gameCurrencyAmount));
                 } else {
                     String out = json.optString("output", "");
-                    player.sendSystemMessage(Component.literal("§cErro na compra: " + (out.isEmpty() ? json.optString("message") : out)));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_error", (out.isEmpty() ? json.optString("message") : out)));
                 }
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro ao processar compra: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_process_error", e.getMessage()));
             }
         });
     }
@@ -318,7 +318,7 @@ public class SolanaManager {
                     stmt.setString(1, signature);
                     try (ResultSet rs = stmt.executeQuery()) {
                         if (rs.next() && rs.getInt(1) > 0) {
-                            player.sendSystemMessage(Component.literal("§cEste reembolso já foi processado!"));
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.refund_already_processed"));
                             return;
                         }
                     }
@@ -331,23 +331,23 @@ public class SolanaManager {
                     try (ResultSet rs = stmt.executeQuery()) {
                         if (rs.next()) {
                             if (!rs.getString("tipo_transacao").equals("compra_moedas")) {
-                                player.sendSystemMessage(Component.literal("§cApenas compras de moedas podem ser reembolsadas!"));
+                                player.sendSystemMessage(Component.translatable("solanaforge.message.refund_only_coins"));
                                 return;
                             }
                             playerName = rs.getString("jogador");
                             amount = rs.getDouble("valor");
                         } else {
-                            player.sendSystemMessage(Component.literal("§cTransação não encontrada!"));
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.transaction_not_found"));
                             return;
                         }
                     }
                 }
 
                 registerTransaction(playerName, "reembolso", amount, "SOL", "REFUND-" + signature);
-                player.sendSystemMessage(Component.literal("§a✅ Reembolso registrado com sucesso!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.refund_success"));
 
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro ao processar reembolso: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.refund_process_error", e.getMessage()));
             }
         });
     }
@@ -357,7 +357,7 @@ public class SolanaManager {
         String effectiveName = getEffectiveName(minecraftName);
         
         if (getWalletFromDatabase(minecraftName) != null) {
-            player.sendSystemMessage(Component.literal("§cVocê já possui uma carteira registrada!"));
+            player.sendSystemMessage(Component.translatable("solanaforge.message.wallet_already_exists"));
             return;
         }
 
@@ -408,12 +408,12 @@ public class SolanaManager {
                     }
                 }
 
-                player.sendSystemMessage(Component.literal("§a✅ Carteira criada com sucesso!"));
-                player.sendSystemMessage(Component.literal("§6Endereço: §b" + walletAddress));
-                player.sendSystemMessage(Component.literal("§e🛡️ Guarde sua frase secreta: §f" + secretPhrase));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.wallet_created"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.address", walletAddress));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.secret_phrase", secretPhrase));
 
             } catch (Exception e) {
-                player.sendSystemMessage(Component.literal("§cErro ao criar carteira: " + e.getMessage()));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.wallet_create_error", e.getMessage()));
             }
         });
     }
@@ -458,6 +458,6 @@ public class SolanaManager {
                 }
             }
         }
-        player.sendSystemMessage(Component.literal("§e💡 Trilha luminosa removida!"));
+        player.sendSystemMessage(Component.translatable("solanaforge.message.trail_removed"));
     }
 }

@@ -39,9 +39,9 @@ public class PlayerJoinHandler {
             .append(Component.literal("a").withStyle(style -> style.withColor(TextColor.parseColor("#EE82EE"))))
             .append(Component.literal(" 🍁").withStyle(style -> style.withColor(TextColor.parseColor("#FFA500"))));
 
-        Component welcomeMessage = Component.literal("§7Bem-vindo ao ")
+        Component welcomeMessage = Component.translatable("solanaforge.message.welcome")
             .append(floliaLogo)
-            .append(Component.literal("§7! Você recebeu §e500 PandaCoins §7de bônus inicial."));
+            .append(Component.translatable("solanaforge.message.welcome_bonus"));
 
         serverPlayer.sendSystemMessage(welcomeMessage);
 
@@ -50,7 +50,7 @@ public class PlayerJoinHandler {
     }
 
     public static void updateTabList(ServerPlayer player, Component logo) {
-        Component header = Component.literal("\n").append(logo).append(Component.literal("\n§7Seu servidor de Solana no Minecraft!\n"));
+        Component header = Component.literal("\n").append(logo).append(Component.translatable("solanaforge.message.header_subtitle"));
         
         String ip = player.getIpAddress();
         if (ip == null || ip.isEmpty()) ip = "Localhost";

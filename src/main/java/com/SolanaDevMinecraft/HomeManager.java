@@ -34,7 +34,7 @@ public class HomeManager {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (instance != null) {
                 instance.setHome(player, "default");
-                player.sendSystemMessage(Component.literal("§dCama salva como sua casa padrão (/home)!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.bed_saved"));
             }
         }
     }
@@ -54,10 +54,10 @@ public class HomeManager {
                 stmt.setDouble(6, player.getZ());
 
                 stmt.executeUpdate();
-                player.sendSystemMessage(Component.literal("§aCasa '§e" + homeName + "§a' definida com sucesso!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.defined", homeName));
 
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao salvar casa no banco de dados."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.save_error"));
             }
         });
     }
@@ -91,17 +91,17 @@ public class HomeManager {
                         ServerLevel level = player.getServer().getLevel(levelKey);
                         if (level != null) {
                             player.teleportTo(level, x, y, z, player.getYRot(), player.getXRot());
-                            player.sendSystemMessage(Component.literal("§6Bem-vindo à sua casa '§e" + homeName + "§6'!"));
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.home.welcome", homeName));
                         } else {
-                            player.sendSystemMessage(Component.literal("§cMundo '§e" + finalWorldName + "§c' não encontrado!"));
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.home.world_not_found", finalWorldName));
                         }
                     });
                 } else {
-                    player.sendSystemMessage(Component.literal("§cCasa '§e" + homeName + "§c' não encontrada!"));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.home.not_found", homeName));
                 }
 
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao consultar casa no banco de dados."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.query_error"));
             }
         });
     }
@@ -111,9 +111,9 @@ public class HomeManager {
             try (Connection conn = databaseManager.getConnection();
                  java.sql.Statement stmt = conn.createStatement()) {
                 stmt.execute("TRUNCATE TABLE homes");
-                player.sendSystemMessage(Component.literal("§c⚠️ TODAS as casas foram resetadas!"));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.reset_all"));
             } catch (SQLException e) {
-                player.sendSystemMessage(Component.literal("§cErro ao resetar casas."));
+                player.sendSystemMessage(Component.translatable("solanaforge.message.home.reset_error"));
             }
         });
     }
