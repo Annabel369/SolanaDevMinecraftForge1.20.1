@@ -106,6 +106,8 @@ If you just want to play/test the compiled mod in your standard Minecraft:
 ## 🌐 Solana Connection Configuration
 *(Adjust this section based on your mod's specific logic, such as RPC config files or keys)*
 
+https://github.com/Annabel369/WebSolana
+
 By default, the mod is configured to connect to the Solana **Devnet**.
 
 Make sure to change the RPC URL in the mod's configuration file (usually generated at `.minecraft/config/solanadevmod-client.toml` after the first run) if you want to use Mainnet or a local Testnet.
