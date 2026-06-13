@@ -4,28 +4,31 @@ This repository contains an integration between the **Solana** blockchain and **
 
 ---
 
-✨ Key Features & Commands
+#✨ Key Features & Commands
 All commands work in both English and Portuguese!
 
-💰 Economy & Wallet
-/createwallet or /criarcarteira: Generate your test Solana wallet.
-/balance or /saldo: Check your in-game coin balance (PandaCoins).
-/solbalance or /solsaldo: View your Solana address and SOL balance.
-/airdrop: Receive 2 test SOL (Devnet) to start playing.
-/buycoins [amount] or /comprarmoedas: Convert SOL to in-game currency.
-/transfersol [player] [amount] or /transferirsol: Send test SOL to another player.
-🔒 Protection & Utilities
-/lockchest [password] or /trancarbau: Secure a chest with a password.
-/unlockchest [password] or /destrancarbau: Remove protection from a chest.
-/sethome [name]: Set your home position.
-/home [name]: Teleport back to your home.
-/tpa [player]: Send a teleport request to a friend.
-/tpaccept or /tpaceitar: Accept a teleport request.
-/back: Return to your previous location (or death point).
-🛒 Special Store
-/buy_boots or /comprar_botas: Get the Celestial Relic Boots.
-/buy_wings or /comprar_asas: Get the Amauris Relic Wings.
-/buy_pants or /comprar_calca: Get the Absolute Shield Pants.
+#💰 Economy & Wallet
+
+    /createwallet or /criarcarteira: Generate your test Solana wallet.
+    /balance or /saldo: Check your in-game coin balance (PandaCoins).
+    /solbalance or /solsaldo: View your Solana address and SOL balance.
+    /airdrop: Receive 2 test SOL (Devnet) to start playing.
+    /buycoins [amount] or /comprarmoedas: Convert SOL to in-game currency.
+    /transfersol [player] [amount] or /transferirsol: Send test SOL to another player.
+#🔒 Protection & Utilities
+
+    /lockchest [password] or /trancarbau: Secure a chest with a password.
+    /unlockchest [password] or /destrancarbau: Remove protection from a chest.
+    /sethome [name]: Set your home position.
+    /home [name]: Teleport back to your home.
+    /tpa [player]: Send a teleport request to a friend.
+    /tpaccept or /tpaceitar: Accept a teleport request.
+    /back: Return to your previous location (or death point).
+#🛒 Special Store
+
+    /buy_boots or /comprar_botas: Get the Celestial Relic Boots.
+    /buy_wings or /comprar_asas: Get the Amauris Relic Wings.
+    /buy_pants or /comprar_calca: Get the Absolute Shield Pants.
 
 
 ## 📋 Prerequisites
