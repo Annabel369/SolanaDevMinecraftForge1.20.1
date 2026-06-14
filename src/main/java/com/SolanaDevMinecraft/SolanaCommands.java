@@ -104,6 +104,13 @@ public class SolanaCommands {
         for (String literal : new String[]{"transferebank", "banktransfer"}) {
             dispatcher.register(Commands.literal(literal)
                     .requires(source -> source.hasPermission(2))
+                    .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                solanaManager.transferFromBank(player, player.getName().getString(), amount);
+                                return 1;
+                            }))
                     .then(Commands.argument("jogador", StringArgumentType.string())
                             .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
                                     .executes(context -> {
@@ -139,6 +146,13 @@ public class SolanaCommands {
     private void registerTransferSol(CommandDispatcher<CommandSourceStack> dispatcher) {
         for (String literal : new String[]{"transferirsol", "transfersol"}) {
             dispatcher.register(Commands.literal(literal)
+                    .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                double amount = DoubleArgumentType.getDouble(context, "quantidade");
+                                solanaManager.transferSolana(player, player.getName().getString(), amount);
+                                return 1;
+                            }))
                     .then(Commands.argument("jogador", StringArgumentType.string())
                             .then(Commands.argument("quantidade", DoubleArgumentType.doubleArg(0.001))
                                     .executes(context -> {

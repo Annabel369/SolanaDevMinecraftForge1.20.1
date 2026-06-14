@@ -18,9 +18,9 @@ public class StoreManager {
     }
 
     public void giveStarterBalance(Player player) {
-        String playerName = SolanaManager.getEffectiveName(player.getName().getString()).toLowerCase();
+        String playerName = SolanaManager.getEffectiveName(player.getName().getString());
         try (Connection conn = databaseManager.getConnection()) {
-            try (PreparedStatement checkStmt = conn.prepareStatement("SELECT saldo FROM banco WHERE jogador = ?")) {
+            try (PreparedStatement checkStmt = conn.prepareStatement("SELECT saldo FROM banco WHERE LOWER(jogador) = LOWER(?)")) {
                 checkStmt.setString(1, playerName);
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (!rs.next()) {
@@ -28,6 +28,8 @@ public class StoreManager {
                             insertStmt.setString(1, playerName);
                             insertStmt.setInt(2, 500);
                             insertStmt.executeUpdate();
+                            // Envia a mensagem apenas se for a primeira vez
+                            player.sendSystemMessage(Component.translatable("solanaforge.message.welcome_bonus"));
                         }
                     }
                 }
@@ -39,8 +41,8 @@ public class StoreManager {
 
     public int getBalance(String playerName) {
         try (Connection conn = databaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT saldo FROM banco WHERE jogador = ?")) {
-            stmt.setString(1, playerName.toLowerCase());
+             PreparedStatement stmt = conn.prepareStatement("SELECT saldo FROM banco WHERE LOWER(jogador) = LOWER(?)")) {
+            stmt.setString(1, playerName);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("saldo");
@@ -53,13 +55,13 @@ public class StoreManager {
     }
 
     public void invest(Player player, double amount) {
-        String playerName = SolanaManager.getEffectiveName(player.getName().getString()).toLowerCase();
+        String playerName = SolanaManager.getEffectiveName(player.getName().getString());
         CompletableFuture.runAsync(() -> {
             try (Connection conn = databaseManager.getConnection()) {
                 int currentBalance = getBalance(playerName);
                 if (currentBalance >= amount) {
                     try (PreparedStatement stmt = conn.prepareStatement(
-                            "UPDATE banco SET investimento = investimento + ?, saldo = saldo - ? WHERE jogador = ?")) {
+                            "UPDATE banco SET investimento = investimento + ?, saldo = saldo - ? WHERE LOWER(jogador) = LOWER(?)")) {
                         stmt.setDouble(1, amount);
                         stmt.setDouble(2, amount);
                         stmt.setString(3, playerName);
@@ -76,11 +78,11 @@ public class StoreManager {
     }
 
     public void takeLoan(Player player, double amount) {
-        String playerName = SolanaManager.getEffectiveName(player.getName().getString()).toLowerCase();
+        String playerName = SolanaManager.getEffectiveName(player.getName().getString());
         CompletableFuture.runAsync(() -> {
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(
-                         "UPDATE banco SET divida = divida + ?, saldo = saldo + ? WHERE jogador = ?")) {
+                         "UPDATE banco SET divida = divida + ?, saldo = saldo + ? WHERE LOWER(jogador) = LOWER(?)")) {
                 stmt.setDouble(1, amount * 1.1); // 10% interest
                 stmt.setDouble(2, amount);
                 stmt.setString(3, playerName);
@@ -93,11 +95,11 @@ public class StoreManager {
     }
 
     public boolean processPurchase(Player player, int price) {
-        String playerName = SolanaManager.getEffectiveName(player.getName().getString()).toLowerCase();
+        String playerName = SolanaManager.getEffectiveName(player.getName().getString());
         try (Connection conn = databaseManager.getConnection()) {
             int currentBalance = getBalance(playerName);
             if (currentBalance >= price) {
-                try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE banco SET saldo = saldo - ? WHERE jogador = ?")) {
+                try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE banco SET saldo = saldo - ? WHERE LOWER(jogador) = LOWER(?)")) {
                     updateStmt.setInt(1, price);
                     updateStmt.setString(2, playerName);
                     updateStmt.executeUpdate();

@@ -39,9 +39,13 @@ public class PlayerJoinHandler {
             .append(Component.literal("a").withStyle(style -> style.withColor(TextColor.parseColor("#EE82EE"))))
             .append(Component.literal(" 🍁").withStyle(style -> style.withColor(TextColor.parseColor("#FFA500"))));
 
+        // 🌈 Nome do Jogador Colorido
+        MutableComponent playerNameColored = Component.literal(player.getName().getString())
+            .withStyle(style -> style.withColor(TextColor.parseColor("#FFD700")).withBold(true));
+
         Component welcomeMessage = Component.translatable("solanaforge.message.welcome")
-            .append(floliaLogo)
-            .append(Component.translatable("solanaforge.message.welcome_bonus"));
+            .append(playerNameColored)
+            .append(Component.translatable("solanaforge.message.welcome_suffix"));
 
         serverPlayer.sendSystemMessage(welcomeMessage);
 

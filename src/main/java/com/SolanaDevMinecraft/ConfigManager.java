@@ -30,7 +30,7 @@ public class ConfigManager {
 
     static {
         BUILDER.push("Database");
-        DB_URL = BUILDER.define("url", "jdbc:mysql://localhost:3306/solanadev");
+        DB_URL = BUILDER.define("url", "jdbc:mysql://localhost:3306/banco");
         DB_USER = BUILDER.define("user", "root");
         DB_PASSWORD = BUILDER.define("password", "0073007");
         DB_USE_SSL = BUILDER.define("use_ssl", false);

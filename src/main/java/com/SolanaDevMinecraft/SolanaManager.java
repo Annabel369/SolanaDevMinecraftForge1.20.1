@@ -1,11 +1,13 @@
 package com.SolanaDevMinecraft;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -51,22 +53,38 @@ public class SolanaManager {
         String url = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comando, StandardCharsets.UTF_8));
         String response = executeHttpGet(url);
         
-        JSONObject json = new JSONObject(response);
-        if (json.has("status") && json.getString("status").equalsIgnoreCase("success")) {
-            String output = json.getString("output").replace(" SOL", "").trim();
+        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+        if (json.has("status") && json.get("status").getAsString().equalsIgnoreCase("success")) {
+            String output = json.get("output").getAsString().replace(" SOL", "").trim();
             if (output.contains("\n")) {
                 output = output.substring(output.lastIndexOf("\n")).trim();
             }
             return Double.parseDouble(output);
         } else {
-            throw new Exception("API error: " + (json.has("message") ? json.getString("message") : response));
+            throw new Exception("API error: " + (json.has("message") ? json.get("message").getAsString() : response));
         }
     }
 
     private String executeHttpGet(String urlString) throws Exception {
+        LOGGER.info("Executando GET: " + urlString);
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5000);
+        connection.setReadTimeout(5000);
+        connection.setInstanceFollowRedirects(false);
+
+        int responseCode = connection.getResponseCode();
+        LOGGER.info("Resposta da API (" + responseCode + ") para: " + urlString);
+        
+        if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+            String newUrl = connection.getHeaderField("Location");
+            throw new Exception("Redirecionamento detectado para: " + newUrl + " (O site está pedindo login ou a página mudou)");
+        }
+
+        if (responseCode != 200) {
+            throw new Exception("Erro HTTP " + responseCode + " ao acessar a API.");
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             StringBuilder response = new StringBuilder();
@@ -78,19 +96,53 @@ public class SolanaManager {
         }
     }
 
-    public String getWalletFromDatabase(String username) {
-        String walletAddress = null;
+    public String getWalletFromExternalAPI(String username) {
         String effectiveName = getEffectiveName(username);
-        try (Connection conn = databaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT c.endereco FROM carteiras c JOIN jogadores j ON c.jogador_id = j.id WHERE j.nome = ?")) {
-            stmt.setString(1, effectiveName);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    walletAddress = rs.getString("endereco");
+        try {
+            String host = ConfigManager.DOCKER_HOST.get();
+            String domain = host.contains("/") ? host.substring(0, host.indexOf("/")) : host;
+            
+            // Força o caminho correto conforme solicitado
+            String url = String.format("http://%s/web_sol/caixa/carteira.php?jogador=%s", domain, URLEncoder.encode(effectiveName, StandardCharsets.UTF_8));
+            
+            String response = executeHttpGet(url);
+            if (response != null && !response.trim().isEmpty() && !response.contains("error")) {
+                String cleanResponse = response.trim().replaceAll("<[^>]*>", "").trim();
+                
+                if (cleanResponse.startsWith("{")) {
+                    JsonObject json = JsonParser.parseString(cleanResponse).getAsJsonObject();
+                    if (json.has("endereco")) return json.get("endereco").getAsString();
+                }
+                
+                if (cleanResponse.length() >= 32 && cleanResponse.length() <= 44) {
+                    return cleanResponse;
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error("Erro ao buscar carteira no banco para " + effectiveName + ": " + e.getMessage());
+        } catch (Exception e) {
+            // Loga o erro mas não trava o processo, permitindo o fallback para o banco
+            LOGGER.warn("API Externa (carteira.php) indisponível ou requer login: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public String getWalletFromDatabase(String username) {
+        // Tenta primeiro na API externa
+        String walletAddress = getWalletFromExternalAPI(username);
+        
+        // Se a API externa falhar (como o erro 302 Redirect), busca no banco de dados local
+        if (walletAddress == null) {
+            String effectiveName = getEffectiveName(username);
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement("SELECT c.endereco FROM carteiras c JOIN jogadores j ON c.jogador_id = j.id WHERE LOWER(j.nome) = LOWER(?)")) {
+                stmt.setString(1, effectiveName);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        walletAddress = rs.getString("endereco");
+                    }
+                }
+            } catch (SQLException e) {
+                LOGGER.error("Erro ao buscar carteira no banco para " + username + ": " + e.getMessage());
+            }
         }
         return walletAddress;
     }
@@ -153,15 +205,15 @@ public class SolanaManager {
                 String url = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comando, StandardCharsets.UTF_8));
                 String response = executeHttpGet(url);
                 
-                JSONObject json = new JSONObject(response);
-                if (json.getString("status").equalsIgnoreCase("success")) {
-                    String output = json.getString("output");
+                JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+                if (json.get("status").getAsString().equalsIgnoreCase("success")) {
+                    String output = json.get("output").getAsString();
                     String signature = extractValue(output, "Signature: ([A-Za-z0-9]+)");
                     admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_success", recipientName, amount));
                     registerTransaction("BANCO", "transferencia_para_" + recipientName, amount, "SOL", signature);
                 } else {
-                    String out = json.optString("output", "");
-                    admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
+                    String out = json.has("output") ? json.get("output").getAsString() : "";
+                    admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? (json.has("message") ? json.get("message").getAsString() : "") : out)));
                 }
             } catch (Exception e) {
                 admin.sendSystemMessage(Component.translatable("solanaforge.message.transfer_process_error", e.getMessage()));
@@ -185,12 +237,12 @@ public class SolanaManager {
                 String url = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comando, StandardCharsets.UTF_8));
                 String response = executeHttpGet(url);
                 
-                JSONObject json = new JSONObject(response);
-                if (json.getString("status").equalsIgnoreCase("success")) {
+                JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+                if (json.get("status").getAsString().equalsIgnoreCase("success")) {
                     player.sendSystemMessage(Component.translatable("solanaforge.message.airdrop_success"));
                 } else {
-                    String out = json.optString("output", "");
-                    player.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
+                    String out = json.has("output") ? json.get("output").getAsString() : "";
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? (json.has("message") ? json.get("message").getAsString() : "") : out)));
                 }
             } catch (Exception e) {
                 player.sendSystemMessage(Component.translatable("solanaforge.message.airdrop_process_error", e.getMessage()));
@@ -227,15 +279,15 @@ public class SolanaManager {
                 String url = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comando, StandardCharsets.UTF_8));
                 String response = executeHttpGet(url);
                 
-                JSONObject json = new JSONObject(response);
-                if (json.getString("status").equalsIgnoreCase("success")) {
-                    String output = json.getString("output");
+                JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+                if (json.get("status").getAsString().equalsIgnoreCase("success")) {
+                    String output = json.get("output").getAsString();
                     String signature = extractValue(output, "Signature: ([A-Za-z0-9]+)");
                     sender.sendSystemMessage(Component.translatable("solanaforge.message.player_transfer_success", amount));
                     registerTransaction(senderEffectiveName, "transferencia", amount, "SOL", signature);
                 } else {
-                    String out = json.optString("output", "");
-                    sender.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? json.optString("message") : out)));
+                    String out = json.has("output") ? json.get("output").getAsString() : "";
+                    sender.sendSystemMessage(Component.translatable("solanaforge.message.transfer_error", (out.isEmpty() ? (json.has("message") ? json.get("message").getAsString() : "") : out)));
                 }
             } catch (Exception e) {
                 sender.sendSystemMessage(Component.translatable("solanaforge.message.transfer_process_error", e.getMessage()));
@@ -271,23 +323,23 @@ public class SolanaManager {
                 String url = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comando, StandardCharsets.UTF_8));
                 String response = executeHttpGet(url);
                 
-                JSONObject json = new JSONObject(response);
-                if (json.getString("status").equalsIgnoreCase("success")) {
-                    String output = json.getString("output");
+                JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+                if (json.get("status").getAsString().equalsIgnoreCase("success")) {
+                    String output = json.get("output").getAsString();
                     String signature = extractValue(output, "Signature: ([A-Za-z0-9]+)");
                     
                     try (Connection conn = databaseManager.getConnection();
-                         PreparedStatement stmt = conn.prepareStatement("UPDATE banco SET saldo = saldo + ? WHERE jogador = ?")) {
+                         PreparedStatement stmt = conn.prepareStatement("UPDATE banco SET saldo = saldo + ? WHERE LOWER(jogador) = LOWER(?)")) {
                         stmt.setDouble(1, (double) gameCurrencyAmount);
-                        stmt.setString(2, effectiveName.toLowerCase());
+                        stmt.setString(2, effectiveName);
                         stmt.executeUpdate();
                     }
                     
                     registerTransaction(effectiveName.toLowerCase(), "compra_moedas", solAmount, "SOL", signature);
-                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_success", effectiveName, gameCurrencyAmount));
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_success", String.format("%.4f", solAmount), gameCurrencyAmount));
                 } else {
-                    String out = json.optString("output", "");
-                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_error", (out.isEmpty() ? json.optString("message") : out)));
+                    String out = json.has("output") ? json.get("output").getAsString() : "";
+                    player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_error", (out.isEmpty() ? (json.has("message") ? json.get("message").getAsString() : "") : out)));
                 }
             } catch (Exception e) {
                 player.sendSystemMessage(Component.translatable("solanaforge.message.purchase_process_error", e.getMessage()));
@@ -371,12 +423,12 @@ public class SolanaManager {
                 String urlGerar = String.format("http://%s/consulta.php?apikey=%s&comando=%s", host, apiwebkey, URLEncoder.encode(comandoGerar, StandardCharsets.UTF_8));
                 String responseGerar = executeHttpGet(urlGerar);
                 
-                JSONObject jsonGerar = new JSONObject(responseGerar);
-                if (!jsonGerar.getString("status").equalsIgnoreCase("success")) {
+                JsonObject jsonGerar = JsonParser.parseString(responseGerar).getAsJsonObject();
+                if (!jsonGerar.get("status").getAsString().equalsIgnoreCase("success")) {
                     throw new Exception("Erro ao criar carteira: " + responseGerar);
                 }
 
-                String walletData = jsonGerar.getString("output");
+                String walletData = jsonGerar.get("output").getAsString();
                 String walletAddress = extractValue(walletData, "pubkey: ([A-Za-z0-9]+)");
                 String secretPhrase = extractValue(walletData, "Save this seed phrase to recover your new keypair:\\s*([^\\n\\r=]+)");
 
@@ -387,11 +439,11 @@ public class SolanaManager {
 
                 try (Connection conn = databaseManager.getConnection()) {
                     int jogadorId;
-                    try (PreparedStatement stmt = conn.prepareStatement("INSERT IGNORE INTO jogadores (nome) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
+                    try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO jogadores (nome) VALUES (?) ON DUPLICATE KEY UPDATE nome = VALUES(nome)", Statement.RETURN_GENERATED_KEYS)) {
                         stmt.setString(1, effectiveName);
                         stmt.executeUpdate();
                     }
-                    try (PreparedStatement stmt = conn.prepareStatement("SELECT id FROM jogadores WHERE nome = ?")) {
+                    try (PreparedStatement stmt = conn.prepareStatement("SELECT id FROM jogadores WHERE LOWER(nome) = LOWER(?)")) {
                         stmt.setString(1, effectiveName);
                         try (ResultSet rs = stmt.executeQuery()) {
                             if (rs.next()) jogadorId = rs.getInt("id");
@@ -426,8 +478,8 @@ public class SolanaManager {
 
     private String convertPrivateKeyToHex(String jsonResponse) {
         try {
-            JSONObject json = new JSONObject(jsonResponse);
-            String output = json.getString("output");
+            JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            String output = json.get("output").getAsString();
             String numbersOnly = output.substring(output.indexOf("[") + 1, output.indexOf("]")).trim();
             String[] numberStrings = numbersOnly.split(",");
             byte[] bytes = new byte[numberStrings.length];

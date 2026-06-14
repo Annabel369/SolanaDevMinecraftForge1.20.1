@@ -1,5 +1,5 @@
 {
-  "mod.solanaforge.description": "Mod integrating Solana blockchain with Minecraft Forge 1.20.1. Create wallets, buy/transfer SOL, protect chests, use exclusive items, and more!",
+  "mod.solanaforge.description": "Mod integrating Solana blockchain with Minecraft Forge 1.19.2. Create wallets, buy/transfer SOL, protect chests, use exclusive items, and more!",
   
   "item.solanaforge.nether_relic": "Nether Relic",
   "item.solanaforge.thor_axe": "Thor's Axe",
@@ -30,8 +30,9 @@
   "solanaforge.message.home.reset_all": "§c⚠️ ALL homes have been reset!",
   "solanaforge.message.home.reset_error": "§cError resetting homes.",
 
-  "solanaforge.message.welcome": "§7Welcome to ",
-  "solanaforge.message.welcome_bonus": "§7! You received §e500 PandaCoins §7initial bonus.",
+  "solanaforge.message.welcome": "§7Welcome to the server, ",
+  "solanaforge.message.welcome_suffix": "§7! Enjoy your journey.",
+  "solanaforge.message.welcome_bonus": "\n§d✨ §bWelcome Bonus! §dYou received §e500 initial PandaCoins§d. §d✨",
   "solanaforge.message.header_subtitle": "\n§7Your Solana server in Minecraft!\n",
 
   "solanaforge.message.balance": "§6Your balance is: §e$%s",

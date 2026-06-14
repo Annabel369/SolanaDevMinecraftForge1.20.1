@@ -1,5 +1,5 @@
 {
-  "mod.solanaforge.description": "Mod que integra a blockchain Solana ao Minecraft Forge 1.20.1. Crie carteiras, compre e transfira SOL, proteja baús, use itens exclusivos e muito mais!",
+  "mod.solanaforge.description": "Mod que integra a blockchain Solana ao Minecraft Forge 1.19.2. Crie carteiras, compre e transfira SOL, proteja baús, use itens exclusivos e muito mais!",
   
   "item.solanaforge.nether_relic": "Relíquia do Nether",
   "item.solanaforge.thor_axe": "Machado de Thor",
@@ -30,8 +30,9 @@
   "solanaforge.message.home.reset_all": "§c⚠️ TODAS as casas foram resetadas!",
   "solanaforge.message.home.reset_error": "§cErro ao resetar casas.",
 
-  "solanaforge.message.welcome": "§7Bem-vindo ao ",
-  "solanaforge.message.welcome_bonus": "§7! Você recebeu §e500 PandaCoins §7de bônus inicial.",
+  "solanaforge.message.welcome": "§7Bem-vindo ao servidor, ",
+  "solanaforge.message.welcome_suffix": "§7! Aproveite sua jornada.",
+  "solanaforge.message.welcome_bonus": "\n§d✨ §bBônus de Boas-Vindas! §dVocê recebeu §e500 PandaCoins §diniciais. §d✨",
   "solanaforge.message.header_subtitle": "\n§7Seu servidor de Solana no Minecraft!\n",
 
   "solanaforge.message.balance": "§6Seu saldo é: §e$%s",
@@ -50,7 +51,7 @@
   "solanaforge.message.airdrop_process_error": "§cErro ao processar airdrop: %s",
   "solanaforge.message.sender_no_wallet": "§cVocê não possui uma carteira registrada.",
   "solanaforge.message.player_transfer_success": "§a💸 Transferência de §e%s SOL §aconcluída!",
-  "solanaforge.message.purchase_success": "§a✅ Compra realizada! Sua conta §e%s §arecebeu §e%s §amoedas.",
+  "solanaforge.message.purchase_success": "§a✅ Compra realizada! §e%s SOL §aconvertidos em §e%s §amoedas.",
   "solanaforge.message.purchase_error": "§cErro na compra: %s",
   "solanaforge.message.purchase_process_error": "§cErro ao processar compra: %s",
   "solanaforge.message.refund_already_processed": "§cEste reembolso já foi processado!",

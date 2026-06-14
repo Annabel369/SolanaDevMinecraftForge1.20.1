@@ -32,7 +32,7 @@ public class SolanaForge {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        LOGGER.info("Solana Forge 1.20.1 iniciado!");
+        LOGGER.info("Solana Forge 1.19.2 iniciado!");
         
         databaseManager = new DatabaseManager(
                 ConfigManager.DB_URL.get(),
