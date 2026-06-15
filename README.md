@@ -1,5 +1,11 @@
 # SolanaDevMinecraftForge1.20.1 🚀⛏️
 
+    Forge Mod https://github.com/Annabel369/SolanaDevMinecraftForge1.20.1
+
+    Plugin https://github.com/Annabel369/SolanaDevMinecraft
+
+    WebPanelSolana https://github.com/Annabel369/WebSolana
+
 This repository contains an integration between the **Solana** blockchain and **Minecraft (Java Edition)** using **Minecraft Forge 1.20.1**. The goal of this mod is to allow developers and players to connect their Solana wallets to the game, interact with smart contracts (programs), or manage in-game items based on tokens or NFTs from the Solana network.
 
 ---
