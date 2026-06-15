@@ -14,9 +14,11 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 public class PlayerJoinHandler {
 
     private static StoreManager storeManager;
+    private static SolanaManager solanaManager;
 
-    public static void init(StoreManager manager) {
-        storeManager = manager;
+    public static void init(StoreManager store, SolanaManager solana) {
+        storeManager = store;
+        solanaManager = solana;
     }
 
     @SubscribeEvent
@@ -27,6 +29,14 @@ public class PlayerJoinHandler {
 
         if (storeManager != null) {
             storeManager.giveStarterBalance(serverPlayer);
+        }
+
+        if (solanaManager != null) {
+            String wallet = solanaManager.getWalletFromDatabase(player.getName().getString());
+            if (wallet == null) {
+                serverPlayer.sendSystemMessage(Component.literal("\n§6[Solana] §eParece que você ainda não tem uma carteira Solana!"));
+                serverPlayer.sendSystemMessage(Component.literal("§6[Solana] §fUse §b/criarcarteira §fou §b/createwallet §fpara começar.\n"));
+            }
         }
 
         // 🌈 Logo "Flolia 🍁"

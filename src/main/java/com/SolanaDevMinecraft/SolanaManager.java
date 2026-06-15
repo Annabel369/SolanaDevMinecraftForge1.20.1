@@ -35,12 +35,9 @@ public class SolanaManager {
 
     /**
      * Mapeia o nome do jogador no Minecraft para o nome usado no banco de dados e nos arquivos de carteira.
-     * De acordo com as instruções do usuário, 'Astral ツ' deve ser mapeado para '007amauri'.
+     * Substitui espaços por underscores para garantir compatibilidade.
      */
     public static String getEffectiveName(String minecraftName) {
-        if (minecraftName.contains("Astral")) {
-            return "007amauri";
-        }
         return minecraftName.replace(" ", "_");
     }
 
@@ -126,25 +123,19 @@ public class SolanaManager {
     }
 
     public String getWalletFromDatabase(String username) {
-        // Tenta primeiro na API externa
-        String walletAddress = getWalletFromExternalAPI(username);
-        
-        // Se a API externa falhar (como o erro 302 Redirect), busca no banco de dados local
-        if (walletAddress == null) {
-            String effectiveName = getEffectiveName(username);
-            try (Connection conn = databaseManager.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement("SELECT c.endereco FROM carteiras c JOIN jogadores j ON c.jogador_id = j.id WHERE LOWER(j.nome) = LOWER(?)")) {
-                stmt.setString(1, effectiveName);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        walletAddress = rs.getString("endereco");
-                    }
+        String effectiveName = getEffectiveName(username); // Usa effectiveName para a consulta no banco de dados
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT c.endereco FROM carteiras c JOIN jogadores j ON c.jogador_id = j.id WHERE LOWER(j.nome) = LOWER(?)")) {
+            stmt.setString(1, effectiveName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("endereco");
                 }
-            } catch (SQLException e) {
-                LOGGER.error("Erro ao buscar carteira no banco para " + username + ": " + e.getMessage());
             }
+        } catch (SQLException e) {
+            LOGGER.error("Erro ao buscar carteira no banco para " + username + ": " + e.getMessage());
         }
-        return walletAddress;
+        return null; // Se não encontrou no banco de dados local, retorna null
     }
 
     public void handleSolBalance(ServerPlayer player) {

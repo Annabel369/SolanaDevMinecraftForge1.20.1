@@ -48,7 +48,7 @@ public class SolanaForge {
         chestLockManager = new ChestLockManager(databaseManager);
         solanaCommands = new SolanaCommands(solanaManager, storeManager, homeManager, teleportManager, chestLockManager);
         
-        PlayerJoinHandler.init(storeManager);
+        PlayerJoinHandler.init(storeManager, solanaManager);
     }
 
     @SubscribeEvent

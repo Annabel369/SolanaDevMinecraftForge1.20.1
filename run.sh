@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Diretório do projeto
-PROJECT_DIR="/media/astral/7DFD-F7FB/Folia/SolanaDevMinecraft/Solana-Forge-1.20.1"
+PROJECT_DIR="/home/astral/Downloads/SolanaDevMinecraftForge1.20.1-main"
 # Diretório de destino
-DEST_DIR="/home/astral/Documents/curseforge/minecraft/Instances/Solana-Sonic/mods"
+DEST_DIR="/home/astral/.minecraft/mods"
 
 echo "======================================"
 echo "Iniciando compilação do Mod SolanaForge..."
