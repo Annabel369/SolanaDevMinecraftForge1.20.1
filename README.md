@@ -33,7 +33,7 @@ All commands work in both English and Portuguese!
 #🛒 Special Store
 
     /buy_boots or /comprar_botas: Get the Celestial Relic Boots.
-    /buy_wings or /comprar_asas: Get the Amauris Relic Wings.
+    /buy_wings or /comprar_reliquia_asa: Get the Amauris Relic Wings.
     /buy_pants or /comprar_calca: Get the Absolute Shield Pants.
 
 
