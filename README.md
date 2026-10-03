@@ -32,9 +32,9 @@ All commands work in both English and Portuguese!
     /back: Return to your previous location (or death point).
 #🛒 Special Store
 
-    /buy_boots or /comprar_botas: Get the Celestial Relic Boots.
+    /buy_boots or /comprar_reliquia_botas: Get the Celestial Relic Boots.
     /buy_wings or /comprar_reliquia_asa: Get the Amauris Relic Wings.
-    /buy_pants or /comprar_calca: Get the Absolute Shield Pants.
+    /buy_pants or /comprar_reliquia_calca: Get the Absolute Shield Pants.
 
 
 ## 📋 Prerequisites
